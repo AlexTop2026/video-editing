@@ -6,6 +6,8 @@ import {
   useVideoConfig,
   interpolate,
   spring,
+  OffthreadVideo,
+  staticFile,
 } from "remotion";
 
 const COLORS = {
@@ -48,15 +50,15 @@ function useSlideUp(startFrame: number, fps: number) {
   return { y, opacity };
 }
 
-// Background gradient
+// Dark scrim over video background — each variant tints the footage differently
 function Background({ variant = "navy" }: { variant?: "navy" | "green" | "cta" }) {
-  const gradients = {
-    navy: `linear-gradient(175deg, ${COLORS.navyLight} 0%, ${COLORS.navy} 60%, #0d1829 100%)`,
-    green: `linear-gradient(175deg, ${COLORS.navy} 0%, #1e3d2f 60%, #0d2218 100%)`,
-    cta: `linear-gradient(175deg, ${COLORS.navyLight} 0%, ${COLORS.navy} 40%, #2a1a44 100%)`,
+  const scrims = {
+    navy: "linear-gradient(175deg, rgba(10,18,38,0.80) 0%, rgba(15,24,48,0.76) 60%, rgba(6,12,26,0.82) 100%)",
+    green: "linear-gradient(175deg, rgba(8,20,30,0.80) 0%, rgba(5,28,18,0.80) 60%, rgba(3,16,10,0.84) 100%)",
+    cta:  "linear-gradient(175deg, rgba(12,16,42,0.84) 0%, rgba(10,18,38,0.82) 40%, rgba(18,10,36,0.86) 100%)",
   };
   return (
-    <AbsoluteFill style={{ background: gradients[variant] }} />
+    <AbsoluteFill style={{ background: scrims[variant] }} />
   );
 }
 
@@ -815,6 +817,13 @@ export const OccupancyInstitute: React.FC = () => {
 
   return (
     <AbsoluteFill style={{ background: COLORS.navy, fontFamily: "Georgia, serif" }}>
+      {/* BASE: full-bleed footage covering all 30 seconds, decoded via FFmpeg */}
+      <OffthreadVideo
+        src={staticFile("IMG_4308.mov")}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+        volume={0}
+      />
+
       {/* HOOK */}
       <Sequence from={HOOK_START} durationInFrames={HOOK_END - HOOK_START + 15}>
         <HookSection />
